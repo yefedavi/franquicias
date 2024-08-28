@@ -4,6 +4,9 @@ import co.com.pruebatecnica.dynamodb.DynamoDBTemplateAdapter;
 import co.com.pruebatecnica.dynamodb.FranchiseEntity;
 import co.com.pruebatecnica.dynamodb.entity.BranchOfficeEntity;
 import co.com.pruebatecnica.dynamodb.entity.ProductEntity;
+import co.com.pruebatecnica.model.BranchOffice;
+import co.com.pruebatecnica.model.Franchise;
+import co.com.pruebatecnica.model.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -22,6 +25,8 @@ import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 class TemplateAdapterOperationsTest {
@@ -41,7 +46,7 @@ class TemplateAdapterOperationsTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        when(dynamoDbEnhancedAsyncClient.table("table_name", TableSchema.fromBean(FranchiseEntity.class)))
+        when(dynamoDbEnhancedAsyncClient.table("franchise", TableSchema.fromBean(FranchiseEntity.class)))
                 .thenReturn(customerTable);
 
         modelEntity = new FranchiseEntity();
@@ -54,55 +59,73 @@ class TemplateAdapterOperationsTest {
 
     @Test
     void modelEntityPropertiesMustNotBeNull() {
-        FranchiseEntity modelEntityUnderTest = new FranchiseEntity("id", "atr1");
 
-        assertNotNull(modelEntityUnderTest.getId());
-        assertNotNull(modelEntityUnderTest.getAtr1());
+        assertNotNull(modelEntity.getName());
+        assertNotNull(modelEntity.getBranchOfficeList());
     }
 
     @Test
     void testSave() {
-        when(customerTable.putItem(modelEntity)).thenReturn(CompletableFuture.runAsync(()->{}));
-        when(mapper.map(modelEntity, FranchiseEntity.class)).thenReturn(modelEntity);
+        Product product = new Product("PRODUCTO_1",5);
+        BranchOffice branchOffice = new BranchOffice("SUCURSAL_1",Collections.singletonList(product));
+        var model = new Franchise("FRANQUICIA_1",Collections.singletonList(branchOffice));
+
+        when(customerTable.putItem(any(FranchiseEntity.class))).thenReturn(CompletableFuture.runAsync(()->{}));
+        when(mapper.map(any(Franchise.class), eq(FranchiseEntity.class))).thenReturn(modelEntity);
 
         DynamoDBTemplateAdapter dynamoDBTemplateAdapter =
                 new DynamoDBTemplateAdapter(dynamoDbEnhancedAsyncClient, mapper);
 
-        StepVerifier.create(dynamoDBTemplateAdapter.save(modelEntity))
+        StepVerifier.create(dynamoDBTemplateAdapter.save(model))
                 .expectNextCount(1)
                 .verifyComplete();
     }
 
     @Test
     void testGetById() {
-        String id = "id";
+        String id = "FRANQUICIA_1";
+        Product product = new Product("PRODUCTO_1",5);
+        BranchOffice branchOffice = new BranchOffice("SUCURSAL_1",Collections.singletonList(product));
+        var model = new Franchise("FRANQUICIA_1",Collections.singletonList(branchOffice));
 
         when(customerTable.getItem(
                 Key.builder().partitionValue(AttributeValue.builder().s(id).build()).build()))
                 .thenReturn(CompletableFuture.completedFuture(modelEntity));
-        when(mapper.map(modelEntity, Object.class)).thenReturn("value");
+        when(mapper.map(modelEntity, Franchise.class)).thenReturn(model);
 
         DynamoDBTemplateAdapter dynamoDBTemplateAdapter =
                 new DynamoDBTemplateAdapter(dynamoDbEnhancedAsyncClient, mapper);
 
-        StepVerifier.create(dynamoDBTemplateAdapter.getById("id"))
-                .expectNext("value")
+        StepVerifier.create(dynamoDBTemplateAdapter.getById("FRANQUICIA_1"))
+                .consumeNextWith(franchise -> {
+                    assertNotNull(franchise);
+                    assertNotNull(franchise.name());
+                    assertNotNull(franchise.branchOfficeList());
+                })
                 .verifyComplete();
     }
 
     @Test
     void testDelete() {
-        when(mapper.map(modelEntity, FranchiseEntity.class)).thenReturn(modelEntity);
-        when(mapper.map(modelEntity, Object.class)).thenReturn("value");
+        Product product = new Product("PRODUCTO_1",5);
+        BranchOffice branchOffice = new BranchOffice("SUCURSAL_1",Collections.singletonList(product));
+        var model = new Franchise("FRANQUICIA_1",Collections.singletonList(branchOffice));
 
         when(customerTable.deleteItem(modelEntity))
                 .thenReturn(CompletableFuture.completedFuture(modelEntity));
+        when(mapper.map(any(Franchise.class), eq(FranchiseEntity.class))).thenReturn(modelEntity);
+        when(mapper.map(any(FranchiseEntity.class), eq(Franchise.class))).thenReturn(model);
+
 
         DynamoDBTemplateAdapter dynamoDBTemplateAdapter =
                 new DynamoDBTemplateAdapter(dynamoDbEnhancedAsyncClient, mapper);
 
-        StepVerifier.create(dynamoDBTemplateAdapter.delete(modelEntity))
-                .expectNext("value")
+        StepVerifier.create(dynamoDBTemplateAdapter.delete(model))
+                .consumeNextWith(franchise -> {
+                    assertNotNull(franchise);
+                    assertNotNull(franchise.name());
+                    assertNotNull(franchise.branchOfficeList());
+                })
                 .verifyComplete();
     }
 }

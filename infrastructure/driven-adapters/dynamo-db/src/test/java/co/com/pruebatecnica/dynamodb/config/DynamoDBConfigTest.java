@@ -3,6 +3,7 @@ package co.com.pruebatecnica.dynamodb.config;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.metrics.MetricPublisher;
@@ -23,24 +24,13 @@ class DynamoDBConfigTest {
 
     @Test
     void testAmazonDynamoDB() {
+        DynamoDbAsyncClient asyncClient = Mockito.mock(DynamoDbAsyncClient.class);
 
-        DynamoDbAsyncClient result = dynamoDBConfig.amazonDynamoDB(
-                "http://aws.dynamo.test",
-                "region",
-                publisher);
+        DynamoDbEnhancedAsyncClient result = dynamoDBConfig.getDynamoDbEnhancedAsyncClient(asyncClient);
 
         assertNotNull(result);
     }
 
-    @Test
-    void testAmazonDynamoDBAsync() {
-
-        DynamoDbAsyncClient result = dynamoDBConfig.amazonDynamoDBAsync(
-                publisher,
-                "region");
-
-        assertNotNull(result);
-    }
 
 
     @Test

@@ -1,6 +1,11 @@
 package co.com.pruebatecnica.model;
 
+import lombok.Data;
+
 import java.util.List;
 
-public record Franchise(String id,String name, List<BranchOffice> branchOfficeList) {
+@Data
+public class Franchise {
+    private String name;
+    private List<BranchOffice> branchOfficeList;
 }
