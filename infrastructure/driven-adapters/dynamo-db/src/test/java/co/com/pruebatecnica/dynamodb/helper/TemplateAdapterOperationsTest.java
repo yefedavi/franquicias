@@ -99,8 +99,8 @@ class TemplateAdapterOperationsTest {
         StepVerifier.create(dynamoDBTemplateAdapter.getById("FRANQUICIA_1"))
                 .consumeNextWith(franchise -> {
                     assertNotNull(franchise);
-                    assertNotNull(franchise.name());
-                    assertNotNull(franchise.branchOfficeList());
+                    assertNotNull(franchise.getName());
+                    assertNotNull(franchise.getBranchOfficeList());
                 })
                 .verifyComplete();
     }
@@ -123,8 +123,8 @@ class TemplateAdapterOperationsTest {
         StepVerifier.create(dynamoDBTemplateAdapter.delete(model))
                 .consumeNextWith(franchise -> {
                     assertNotNull(franchise);
-                    assertNotNull(franchise.name());
-                    assertNotNull(franchise.branchOfficeList());
+                    assertNotNull(franchise.getName());
+                    assertNotNull(franchise.getBranchOfficeList());
                 })
                 .verifyComplete();
     }

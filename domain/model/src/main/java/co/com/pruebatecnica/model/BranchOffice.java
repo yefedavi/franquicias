@@ -1,6 +1,13 @@
 package co.com.pruebatecnica.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.util.List;
 
-public record BranchOffice(String name, List<Product> productList) {
+@Data
+@AllArgsConstructor
+public class BranchOffice {
+    private String name;
+    private List<Product> productList;
 }

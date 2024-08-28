@@ -1,4 +1,11 @@
 package co.com.pruebatecnica.model;
 
-public record Product(String name,Integer stock) {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class Product {
+    private String name;
+    private Integer stock;
 }
