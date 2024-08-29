@@ -27,7 +27,7 @@ class ProductUseCaseTest {
     @Test
     public void addToBranchOfficeSuccess(){
         Mockito.when(franchiseGateway.findByName(eq("FRANQUICIA_3"))).thenReturn(Mono.just(createFranchise()));
-        Mockito.when(franchiseGateway.save(any())).thenReturn(Mono.just(Boolean.TRUE));
+        Mockito.when(franchiseGateway.update(any())).thenReturn(Mono.just(Boolean.TRUE));
         Mono<Boolean> response = productUseCase.addToBranchOffice("FRANQUICIA_3","SUCURSAL_1","PRODUCTO_66",20);
         StepVerifier.create(response)
                 .consumeNextWith(Assertions::assertTrue).verifyComplete();
@@ -45,7 +45,7 @@ class ProductUseCaseTest {
     @Test
     public void removeFromBranchOfficeSuccess(){
         Mockito.when(franchiseGateway.findByName(eq("FRANQUICIA_3"))).thenReturn(Mono.just(createFranchise()));
-        Mockito.when(franchiseGateway.save(any())).thenReturn(Mono.just(Boolean.TRUE));
+        Mockito.when(franchiseGateway.update(any())).thenReturn(Mono.just(Boolean.TRUE));
         Mono<Boolean> response = productUseCase.removeFromBranchOffice("FRANQUICIA_3","SUCURSAL_1","PRODUCTO_1");
         StepVerifier.create(response)
                 .consumeNextWith(Assertions::assertTrue).verifyComplete();
@@ -73,7 +73,7 @@ class ProductUseCaseTest {
     @Test
     public void changeStockSuccess(){
         Mockito.when(franchiseGateway.findByName(eq("FRANQUICIA_3"))).thenReturn(Mono.just(createFranchise()));
-        Mockito.when(franchiseGateway.save(any())).thenReturn(Mono.just(Boolean.TRUE));
+        Mockito.when(franchiseGateway.update(any())).thenReturn(Mono.just(Boolean.TRUE));
         Mono<Boolean> response = productUseCase.changeStock("FRANQUICIA_3","SUCURSAL_1","PRODUCTO_1",50);
         StepVerifier.create(response)
                 .consumeNextWith(Assertions::assertTrue).verifyComplete();

@@ -7,6 +7,7 @@ import co.com.pruebatecnica.model.gateway.FranchiseGateway;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.SynchronousSink;
 
 import java.util.Objects;
 
@@ -22,18 +23,27 @@ public class FranchiseAdapter implements FranchiseGateway {
 
     @Override
     public Mono<Boolean> save(Franchise franchise) {
-        return dynamoDBTemplateAdapter.save(franchise)
+        return dynamoDBTemplateAdapter.getById(franchise.getName()).switchIfEmpty(Mono.just(new Franchise()))
+                .handle(FranchiseAdapter::sinkValidationExists)
+        .flatMap(franchise1 -> dynamoDBTemplateAdapter.save(franchise)
                 .map(Objects::nonNull)
                 .doOnSubscribe(request -> log.info("request to save dynamodb ".concat(request.toString())))
                 .doOnSuccess(response -> log.info("save dynamodb success ".concat(franchise.getName())))
                 .doOnError(error -> log.info("save dynamodb error ".concat(error.toString())))
-                .onErrorResume(throwable -> Mono.error(new FranchiseException(ValidationErrorMessage.DYNAMODB_SAVE_ERROR)));
+                .onErrorResume(throwable -> Mono.error(new FranchiseException(ValidationErrorMessage.DYNAMODB_SAVE_ERROR))));
+    }
+
+    private static void sinkValidationExists(Franchise modelDb, SynchronousSink<Franchise> sink) {
+        if(modelDb !=null && modelDb.getName() != null){
+            sink.error(new FranchiseException(ValidationErrorMessage.FRANCHISE_EXISTS));
+        }else {
+            sink.next(new Franchise());
+        }
     }
 
     @Override
     public Mono<Boolean> update(Franchise franchise) {
-        return findByName(franchise.getName())
-                .flatMap(franchiseDb -> dynamoDBTemplateAdapter.save(franchise))
+        return  dynamoDBTemplateAdapter.save(franchise)
                 .map(Objects::nonNull)
                 .doOnSubscribe(request -> log.info("request to update dynamodb ".concat(request.toString())))
                 .doOnSuccess(response -> log.info("update dynamodb success ".concat(franchise.getName())))

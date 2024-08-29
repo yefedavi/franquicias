@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -35,14 +36,15 @@ class FranchiseAdapterTest {
     }
 
     private Franchise buildFranchise(){
-        Product product = new Product("PRODUCTO_2",5);
-        BranchOffice branchOffice = new BranchOffice("SUCURSAL_1", Collections.singletonList(product));
+        Product product = new Product("PRODUCTO_2",5,"SUCURSAL_1");
+        BranchOffice branchOffice = new BranchOffice("FRANQUICIA_1","SUCURSAL_1", Collections.singletonList(product));
         var model = new Franchise("FRANQUICIA_1",Collections.singletonList(branchOffice));
         return model;
     }
 
     @Test
     public void saveSuccess(){
+        Mockito.when(dynamoDBTemplateAdapter.getById(any())).thenReturn(Mono.empty());
         Mockito.when(dynamoDBTemplateAdapter.save(any())).thenReturn(Mono.just(buildFranchise()));
         StepVerifier.create(franchiseAdapter.save(buildFranchise())).consumeNextWith(Assertions::assertTrue)
                 .verifyComplete();
@@ -50,9 +52,19 @@ class FranchiseAdapterTest {
 
     @Test
     public void saveError(){
+        Mockito.when(dynamoDBTemplateAdapter.getById(any())).thenReturn(Mono.empty());
         Mockito.when(dynamoDBTemplateAdapter.save(any())).thenReturn(Mono.error(new RuntimeException("dynamodb error")));
         StepVerifier.create(franchiseAdapter.save(buildFranchise())).consumeErrorWith(error ->
                         Assertions.assertEquals(error.getMessage(), ValidationErrorMessage.DYNAMODB_SAVE_ERROR.getMessage()))
+                .verify();
+    }
+
+    @Test
+    public void saveErrorFranchiseExists(){
+        Mockito.when(dynamoDBTemplateAdapter.getById(any())).thenReturn(Mono.just(buildFranchise()));
+        Mockito.when(dynamoDBTemplateAdapter.save(any())).thenReturn(Mono.just(buildFranchise()));
+        StepVerifier.create(franchiseAdapter.save(buildFranchise())).consumeErrorWith(error ->
+                        Assertions.assertEquals(error.getMessage(), ValidationErrorMessage.FRANCHISE_EXISTS.getMessage()))
                 .verify();
     }
 
@@ -87,5 +99,13 @@ class FranchiseAdapterTest {
         Mockito.when(dynamoDBTemplateAdapter.getById(any())).thenReturn(Mono.just(buildFranchise()));
         StepVerifier.create(franchiseAdapter.findByName("FRANQUICIA_1")).consumeNextWith(Assertions::assertNotNull)
                 .verifyComplete();
+    }
+
+    @Test
+    public void findByNameErrorFranchiseDoesNotExists(){
+        Mockito.when(dynamoDBTemplateAdapter.getById(any())).thenReturn(Mono.empty());
+        StepVerifier.create(franchiseAdapter.findByName("FRANQUICIA_1")).consumeErrorWith(error ->
+                        Assertions.assertEquals(error.getMessage(), ValidationErrorMessage.FRANCHISE_DOES_NOT_EXISTS.getMessage()))
+                .verify();
     }
 }

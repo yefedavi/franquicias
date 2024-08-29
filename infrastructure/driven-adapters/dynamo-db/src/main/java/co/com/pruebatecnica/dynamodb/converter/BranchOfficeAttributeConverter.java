@@ -45,11 +45,10 @@ public class BranchOfficeAttributeConverter implements AttributeConverter<List<B
             List<AttributeValue> productList = attributeValue.m().get("productList").l();
             List<ProductEntity> productEntityList = new ArrayList<>();
             productList.forEach(productValue -> {
-                productEntityList.add(ProductEntity.builder().name(productValue.m().get("name").s())
-                        .stock(Integer.parseInt(productValue.m().get("stock").s())).build());
+
+                productEntityList.add(new ProductEntity(productValue.m().get("name").s(),Integer.parseInt(productValue.m().get("stock").s())));
             });
-            branchOfficeEntityList.add(BranchOfficeEntity.builder()
-                    .name(attributeValue.m().get("name").s()).productList(productEntityList).build());
+            branchOfficeEntityList.add(new BranchOfficeEntity(attributeValue.m().get("name").s(),productEntityList));
         });
         return branchOfficeEntityList;
     }

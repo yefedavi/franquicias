@@ -51,9 +51,8 @@ class TemplateAdapterOperationsTest {
 
         modelEntity = new FranchiseEntity();
         modelEntity.setName("FRANQUICIA_1");
-        BranchOfficeEntity branchOfficeEntity = BranchOfficeEntity.builder().name("SUCURSAL_1")
-                .productList(Arrays.asList(ProductEntity.builder().stock(5).name("PRODUCTO_1").build(),
-                        ProductEntity.builder().stock(4).name("PRODUCTO_2").build())).build();
+        ;
+        BranchOfficeEntity branchOfficeEntity = new BranchOfficeEntity("SUCURSAL_1",Arrays.asList(new ProductEntity("PRODUCTO_1",5),new ProductEntity("PRODUCTO_2",4)));
         modelEntity.setBranchOfficeList(Collections.singletonList(branchOfficeEntity));
     }
 
@@ -66,8 +65,8 @@ class TemplateAdapterOperationsTest {
 
     @Test
     void testSave() {
-        Product product = new Product("PRODUCTO_1",5);
-        BranchOffice branchOffice = new BranchOffice("SUCURSAL_1",Collections.singletonList(product));
+        Product product = new Product("PRODUCTO_1",5,"SUCURSAL_1");
+        BranchOffice branchOffice = new BranchOffice("FRANQUICIA_1","SUCURSAL_1",Collections.singletonList(product));
         var model = new Franchise("FRANQUICIA_1",Collections.singletonList(branchOffice));
 
         when(customerTable.putItem(any(FranchiseEntity.class))).thenReturn(CompletableFuture.runAsync(()->{}));
@@ -84,8 +83,8 @@ class TemplateAdapterOperationsTest {
     @Test
     void testGetById() {
         String id = "FRANQUICIA_1";
-        Product product = new Product("PRODUCTO_1",5);
-        BranchOffice branchOffice = new BranchOffice("SUCURSAL_1",Collections.singletonList(product));
+        Product product = new Product("PRODUCTO_1",5,"SUCURSAL_1");
+        BranchOffice branchOffice = new BranchOffice("FRANQUICIA_1","SUCURSAL_1",Collections.singletonList(product));
         var model = new Franchise("FRANQUICIA_1",Collections.singletonList(branchOffice));
 
         when(customerTable.getItem(
@@ -107,8 +106,8 @@ class TemplateAdapterOperationsTest {
 
     @Test
     void testDelete() {
-        Product product = new Product("PRODUCTO_1",5);
-        BranchOffice branchOffice = new BranchOffice("SUCURSAL_1",Collections.singletonList(product));
+        Product product = new Product("PRODUCTO_1",5,"SUCURSAL_1");
+        BranchOffice branchOffice = new BranchOffice("FRANQUICIA_1","SUCURSAL_1",Collections.singletonList(product));
         var model = new Franchise("FRANQUICIA_1",Collections.singletonList(branchOffice));
 
         when(customerTable.deleteItem(modelEntity))

@@ -1,12 +1,14 @@
 package co.com.pruebatecnica.dynamodb.entity;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BranchOfficeEntity {
 
     private String name;

@@ -6,10 +6,12 @@ import co.com.pruebatecnica.model.enums.ValidationErrorMessage;
 import co.com.pruebatecnica.model.exception.FranchiseException;
 import co.com.pruebatecnica.model.gateway.FranchiseGateway;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.SynchronousSink;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class ProductUseCase {
 
     private List<Product> updateList(List<Product> productListOld,String productName,Integer stock){
         List<Product> list = new ArrayList<>(productListOld);
-        list.add(new Product(productName, stock));
+        list.add(new Product(productName, stock,null));
         return list;
     }
 
@@ -44,13 +46,17 @@ public class ProductUseCase {
         return franchiseGateway.findByName(franchiseName).<Franchise>handle((modelDb, sink) -> {
                     if(modelDb.getBranchOfficeList().stream().anyMatch(branchOffice -> branchOffice.getName().equals(branchOfficeName))){
                         List<Product> productList = getProductListBranchOffice(branchOfficeName, modelDb);
+                        if(productList.stream().anyMatch(product -> product.getName().equals(productName))){
+                            sink.error(new FranchiseException(ValidationErrorMessage.PRODUCT_EXISTS));
+                            return;
+                        }
                         modelDb.getBranchOfficeList().stream().filter(branchOffice -> branchOffice.getName().equals(branchOfficeName))
                                 .findFirst().get().setProductList(updateList(productList,productName,stock));
                         sink.next(modelDb);
                         return;
                     }
                     errorBranchOfficeDoesNotExists(sink);
-        }).flatMap(franchiseGateway::save);
+        }).flatMap(franchiseGateway::update);
     }
 
     public Mono<Boolean> removeFromBranchOffice(String franchiseName,String branchOfficeName,String productName){
@@ -67,7 +73,7 @@ public class ProductUseCase {
                         return;
                     }
             errorBranchOfficeDoesNotExists(sink);
-        }).flatMap(franchiseGateway::save);
+        }).flatMap(franchiseGateway::update);
     }
 
     private static void errorBranchOfficeDoesNotExists(SynchronousSink<Franchise> sink) {
@@ -88,11 +94,27 @@ public class ProductUseCase {
                 return;
             }
             errorBranchOfficeDoesNotExists(sink);
-        }).flatMap(franchiseGateway::save);
+        }).flatMap(franchiseGateway::update);
     }
 
     private static List<Product> getProductListBranchOffice(String branchOfficeName, Franchise modelDb) {
         return modelDb.getBranchOfficeList().stream().filter(branchOffice -> branchOffice.getName().equals(branchOfficeName))
                 .findFirst().get().getProductList();
+    }
+
+    public Flux<Product> getProductsStockMax(String franchiseName){
+        return franchiseGateway.findByName(franchiseName).flatMapMany(modelDb -> {
+            List<Product> products = new ArrayList<>();
+            modelDb.getBranchOfficeList().forEach(branchOffice -> {
+                Product emptyProduct = new Product();
+                Product productMax = branchOffice.getProductList().stream().max(Comparator.comparingInt(Product::getStock)).orElseGet(() -> emptyProduct);
+                productMax.setBranchOfficeName(branchOffice.getName());
+                if(productMax.getName() != null){
+                    products.add(productMax);
+                }
+            });
+
+            return Flux.fromIterable(products);
+        });
     }
 }
