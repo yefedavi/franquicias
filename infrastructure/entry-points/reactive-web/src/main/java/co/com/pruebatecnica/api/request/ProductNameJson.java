@@ -1,7 +1,6 @@
 package co.com.pruebatecnica.api.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Value;
@@ -11,8 +10,13 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @Builder(toBuilder = true)
 @Data
-public class FranchiseJson {
-    @Schema(description = "Franchise name",example = "FRANCHISE_ONE")
+public class ProductNameJson {
+    @JsonProperty("franchiseName")
+    String franchiseName;
+    @JsonProperty("branchOfficeName")
+    String branchOfficeName;
     @JsonProperty("name")
     String name;
+    @JsonProperty("newName")
+    String newName;
 }

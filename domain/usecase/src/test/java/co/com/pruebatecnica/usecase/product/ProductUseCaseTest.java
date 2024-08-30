@@ -2,6 +2,7 @@ package co.com.pruebatecnica.usecase.product;
 
 import co.com.pruebatecnica.model.enums.ValidationErrorMessage;
 import co.com.pruebatecnica.model.gateway.FranchiseGateway;
+import co.com.pruebatecnica.model.gateway.ProductGateway;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +24,9 @@ class ProductUseCaseTest {
 
     @Mock
     private FranchiseGateway franchiseGateway;
+
+    @Mock
+    private ProductGateway productGateway;
 
     @Test
     public void addToBranchOfficeSuccess(){
@@ -95,5 +99,13 @@ class ProductUseCaseTest {
         StepVerifier.create(response)
                 .consumeErrorWith(error -> Assertions.assertEquals(ValidationErrorMessage.PRODUCT_DOES_NOT_EXISTS.getMessage(),error.getMessage()))
                 .verify();
+    }
+
+    @Test
+    public void changeNameSuccess(){
+        Mockito.when(productGateway.changeName(any(),any(),any(),any())).thenReturn(Mono.just(Boolean.TRUE));
+        Mono<Boolean> response = productUseCase.changeName("FRANQUICIA_3","SUCURSAL_1","PRODUCTO_1","PRODUCTO_1.1.1.1");
+        StepVerifier.create(response)
+                .consumeNextWith(Assertions::assertTrue).verifyComplete();
     }
 }

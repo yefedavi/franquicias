@@ -37,6 +37,10 @@ curl -X PUT http://localhost:8080/api/product \
     -H 'Content-Type: application/json' \
     -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE","name":"SUBWAY_HAWAIANO","stock":24}'
 
+curl -X PUT http://localhost:8080/api/product/name \
+    -H 'Content-Type: application/json' \
+    -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE","name":"SUBWAY_HAWAIANO","newName":"SUBWAY_HAWAIANO_UPDATE"}'
+
 
 curl -X POST http://localhost:8080/api/franchise \
    -H 'Content-Type: application/json' \

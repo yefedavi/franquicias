@@ -13,4 +13,5 @@ public class FranchiseUseCase {
     public Mono<Boolean> add(Franchise franchise) {
         return franchiseGateway.save(franchise);
     }
+
 }

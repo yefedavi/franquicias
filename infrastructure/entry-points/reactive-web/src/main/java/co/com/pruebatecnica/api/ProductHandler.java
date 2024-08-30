@@ -3,6 +3,7 @@ package co.com.pruebatecnica.api;
 import co.com.pruebatecnica.api.mapper.FranchiseOperationsMapper;
 import co.com.pruebatecnica.api.request.FranchiseJson;
 import co.com.pruebatecnica.api.request.ProductJson;
+import co.com.pruebatecnica.api.request.ProductNameJson;
 import co.com.pruebatecnica.api.response.FranchiseResponseJson;
 import co.com.pruebatecnica.api.response.ProductResponseJson;
 import co.com.pruebatecnica.api.response.ProductRootResponseJson;
@@ -82,6 +83,19 @@ public class ProductHandler {
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(buldResponseJson("400", error.getMessage())))
                 .doOnSuccess(response -> log.info("Product response ".concat(response.statusCode().toString())));
+    }
+
+    public Mono<ServerResponse> changeName(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(ProductNameJson.class)
+                .doOnSuccess(request -> log.info("Change Name Product Request ".concat(request.toString())))
+                .flatMap(productJson -> productUseCase.changeName(productJson.getFranchiseName(),productJson.getBranchOfficeName(),productJson.getName(),productJson.getNewName()))
+                .flatMap(success -> ServerResponse.status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(buldResponseJson("200", SUCCESS)))
+                .onErrorResume(error -> ServerResponse.status(HttpStatus.BAD_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(buldResponseJson("400", error.getMessage())))
+                .doOnSuccess(response -> log.info("Change Name Product response ".concat(response.statusCode().toString())));
     }
 
     private ProductRootResponseJson buildResponseProductList(List<Product> productList) {

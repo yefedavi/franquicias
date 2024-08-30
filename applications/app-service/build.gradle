@@ -13,6 +13,8 @@ dependencies {
     testImplementation 'com.tngtech.archunit:archunit:1.1.1'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation group: 'org.springframework.boot', name: 'spring-boot-docker-compose', version: "${springBootVersion}"
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webflux-api', version: '2.6.0'
 }
 
 tasks.register('explodedJar', Copy) {

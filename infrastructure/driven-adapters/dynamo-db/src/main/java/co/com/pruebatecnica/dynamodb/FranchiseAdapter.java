@@ -25,9 +25,9 @@ public class FranchiseAdapter implements FranchiseGateway {
     public Mono<Boolean> save(Franchise franchise) {
         return dynamoDBTemplateAdapter.getById(franchise.getName()).switchIfEmpty(Mono.just(new Franchise()))
                 .handle(FranchiseAdapter::sinkValidationExists)
-        .flatMap(franchise1 -> dynamoDBTemplateAdapter.save(franchise)
-                .map(Objects::nonNull)
+                .flatMap(franchise1 -> dynamoDBTemplateAdapter.save(franchise)
                 .doOnSubscribe(request -> log.info("request to save dynamodb ".concat(request.toString())))
+                .map(Objects::nonNull)
                 .doOnSuccess(response -> log.info("save dynamodb success ".concat(franchise.getName())))
                 .doOnError(error -> log.info("save dynamodb error ".concat(error.toString())))
                 .onErrorResume(throwable -> Mono.error(new FranchiseException(ValidationErrorMessage.DYNAMODB_SAVE_ERROR))));
@@ -44,8 +44,8 @@ public class FranchiseAdapter implements FranchiseGateway {
     @Override
     public Mono<Boolean> update(Franchise franchise) {
         return  dynamoDBTemplateAdapter.save(franchise)
-                .map(Objects::nonNull)
                 .doOnSubscribe(request -> log.info("request to update dynamodb ".concat(request.toString())))
+                .map(Objects::nonNull)
                 .doOnSuccess(response -> log.info("update dynamodb success ".concat(franchise.getName())))
                 .doOnError(error -> log.info("update dynamodb error ".concat(error.toString())))
                 .onErrorResume(throwable -> Mono.error(new FranchiseException(ValidationErrorMessage.DYNAMODB_UPDATE_ERROR,throwable.getMessage())));

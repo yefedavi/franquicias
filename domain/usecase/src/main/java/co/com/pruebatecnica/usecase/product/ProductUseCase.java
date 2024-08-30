@@ -5,6 +5,7 @@ import co.com.pruebatecnica.model.Product;
 import co.com.pruebatecnica.model.enums.ValidationErrorMessage;
 import co.com.pruebatecnica.model.exception.FranchiseException;
 import co.com.pruebatecnica.model.gateway.FranchiseGateway;
+import co.com.pruebatecnica.model.gateway.ProductGateway;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductUseCase {
     private final FranchiseGateway franchiseGateway;
+    private final ProductGateway productGateway;
 
 
     private List<Product> updateList(List<Product> productListOld,String productName,Integer stock){
@@ -116,5 +118,9 @@ public class ProductUseCase {
 
             return Flux.fromIterable(products);
         });
+    }
+
+    public Mono<Boolean> changeName(String franchiseName,String branchOfficeName,String productName,String newName){
+        return productGateway.changeName(franchiseName,branchOfficeName,productName,newName);
     }
 }
