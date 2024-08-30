@@ -26,7 +26,7 @@ class BranchOfficeUseCaseTest {
     @Test
     public void addToFranchiseSuccess(){
         Mockito.when(franchiseGateway.findByName(eq("FRANQUICIA_3"))).thenReturn(Mono.just(createFranchise()));
-        Mockito.when(franchiseGateway.save(any())).thenReturn(Mono.just(Boolean.TRUE));
+        Mockito.when(franchiseGateway.update(any())).thenReturn(Mono.just(Boolean.TRUE));
         Mono<Boolean> response = branchOfficeUseCase.addToFranchise("FRANQUICIA_3","SUCURSAL_55");
         StepVerifier.create(response)
                 .consumeNextWith(Assertions::assertTrue).verifyComplete();

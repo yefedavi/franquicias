@@ -43,7 +43,7 @@ public class ProductUseCase {
         return list;
     }
 
-
+    //TODO refactor to ProductAdapter
     public Mono<Boolean> addToBranchOffice(String franchiseName,String branchOfficeName,String productName,Integer stock){
         return franchiseGateway.findByName(franchiseName).<Franchise>handle((modelDb, sink) -> {
                     if(modelDb.getBranchOfficeList().stream().anyMatch(branchOffice -> branchOffice.getName().equals(branchOfficeName))){
@@ -61,6 +61,7 @@ public class ProductUseCase {
         }).flatMap(franchiseGateway::update);
     }
 
+    //TODO refactor to ProductAdapter
     public Mono<Boolean> removeFromBranchOffice(String franchiseName,String branchOfficeName,String productName){
         return franchiseGateway.findByName(franchiseName).<Franchise>handle((modelDb, sink) -> {
                     if(modelDb.getBranchOfficeList().stream().anyMatch(branchOffice -> branchOffice.getName().equals(branchOfficeName))){
@@ -82,6 +83,7 @@ public class ProductUseCase {
         sink.error(new FranchiseException(ValidationErrorMessage.BRANCH_OFFICE_DOES_NOT_EXISTS));
     }
 
+    //TODO refactor to ProductAdapter
     public Mono<Boolean> changeStock(String franchiseName,String branchOfficeName,String productName,Integer stock){
         return franchiseGateway.findByName(franchiseName).<Franchise>handle((modelDb, sink) -> {
             if(modelDb.getBranchOfficeList().stream().anyMatch(branchOffice -> branchOffice.getName().equals(branchOfficeName))){
@@ -104,6 +106,7 @@ public class ProductUseCase {
                 .findFirst().get().getProductList();
     }
 
+    //TODO refactor to ProductAdapter
     public Flux<Product> getProductsStockMax(String franchiseName){
         return franchiseGateway.findByName(franchiseName).flatMapMany(modelDb -> {
             List<Product> products = new ArrayList<>();

@@ -12,15 +12,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @Builder(toBuilder = true)
 @Data
-public class ProductNameJson {
-    @NotNull
-    @NotEmpty
-    @JsonProperty("franchiseName")
-    String franchiseName;
-    @NotNull
-    @NotEmpty
-    @JsonProperty("branchOfficeName")
-    String branchOfficeName;
+public class FranchiseNameJson {
     @NotNull
     @NotEmpty
     @JsonProperty("name")

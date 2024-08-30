@@ -1,15 +1,11 @@
 package co.com.pruebatecnica.api;
 
-import co.com.pruebatecnica.api.mapper.FranchiseOperationsMapper;
-import co.com.pruebatecnica.api.request.FranchiseJson;
 import co.com.pruebatecnica.api.request.ProductJson;
 import co.com.pruebatecnica.api.request.ProductNameJson;
-import co.com.pruebatecnica.api.response.FranchiseResponseJson;
 import co.com.pruebatecnica.api.response.ProductResponseJson;
 import co.com.pruebatecnica.api.response.ProductRootResponseJson;
+import co.com.pruebatecnica.api.util.RequestValidator;
 import co.com.pruebatecnica.model.Product;
-import co.com.pruebatecnica.usecase.branchoffice.BranchOfficeUseCase;
-import co.com.pruebatecnica.usecase.franchise.FranchiseUseCase;
 import co.com.pruebatecnica.usecase.product.ProductUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +27,11 @@ import static co.com.pruebatecnica.api.util.ResponseJsonUtil.buldResponseJson;
 public class ProductHandler {
     private  final ProductUseCase productUseCase;
     private static final String SUCCESS = "SUCCESS";
+    private final RequestValidator validator;
 
     public Mono<ServerResponse> addToBranchOffice(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(ProductJson.class)
+                .flatMap(this.validator::validate)
                 .doOnSuccess(request -> log.info("Product Request ".concat(request.toString())))
                 .flatMap(productJson -> productUseCase.addToBranchOffice(productJson.getFranchiseName(),productJson.getBranchOfficeName(),productJson.getName(),productJson.getStock()))
                 .flatMap(success -> ServerResponse.status(HttpStatus.OK)
@@ -47,6 +45,7 @@ public class ProductHandler {
 
     public Mono<ServerResponse> removeBranchOffice(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(ProductJson.class)
+                .flatMap(this.validator::validate)
                 .doOnSuccess(request -> log.info("Remove Product Request ".concat(request.toString())))
                 .flatMap(productJson -> productUseCase.removeFromBranchOffice(productJson.getFranchiseName(),productJson.getBranchOfficeName(),productJson.getName()))
                 .flatMap(success -> ServerResponse.status(HttpStatus.OK)
@@ -60,6 +59,7 @@ public class ProductHandler {
 
     public Mono<ServerResponse> changeStock(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(ProductJson.class)
+                .flatMap(this.validator::validate)
                 .doOnSuccess(request -> log.info("Stock Product Request ".concat(request.toString())))
                 .flatMap(productJson -> productUseCase.changeStock(productJson.getFranchiseName(),productJson.getBranchOfficeName(),productJson.getName(),productJson.getStock()))
                 .flatMap(success -> ServerResponse.status(HttpStatus.OK)
@@ -87,6 +87,7 @@ public class ProductHandler {
 
     public Mono<ServerResponse> changeName(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(ProductNameJson.class)
+                .flatMap(this.validator::validate)
                 .doOnSuccess(request -> log.info("Change Name Product Request ".concat(request.toString())))
                 .flatMap(productJson -> productUseCase.changeName(productJson.getFranchiseName(),productJson.getBranchOfficeName(),productJson.getName(),productJson.getNewName()))
                 .flatMap(success -> ServerResponse.status(HttpStatus.OK)

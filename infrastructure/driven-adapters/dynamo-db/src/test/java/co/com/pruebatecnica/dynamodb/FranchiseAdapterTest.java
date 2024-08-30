@@ -76,20 +76,10 @@ class FranchiseAdapterTest {
     }
 
     @Test
-    public void updateErrorEmpty(){
-        Mockito.when(dynamoDBTemplateAdapter.save(any())).thenReturn(Mono.just(buildFranchise()));
-        Mockito.when(dynamoDBTemplateAdapter.getById(any())).thenReturn(Mono.empty());
-        StepVerifier.create(franchiseAdapter.update(buildFranchise())).consumeErrorWith(error ->
-                        Assertions.assertEquals(error.getMessage(), ValidationErrorMessage.FRANCHISE_DOES_NOT_EXISTS.getMessage()))
-                .verify();
-    }
-
-    @Test
     public void updateError(){
         Mockito.when(dynamoDBTemplateAdapter.save(any())).thenReturn(Mono.error(new RuntimeException("dynamodb error")));
-        Mockito.when(dynamoDBTemplateAdapter.getById(any())).thenReturn(Mono.just(buildFranchise()));
-        StepVerifier.create(franchiseAdapter.save(buildFranchise())).consumeErrorWith(error ->
-                        Assertions.assertEquals(error.getMessage(), ValidationErrorMessage.DYNAMODB_SAVE_ERROR.getMessage()))
+        StepVerifier.create(franchiseAdapter.update(buildFranchise())).consumeErrorWith(error ->
+                        Assertions.assertEquals(error.getMessage(), "dynamodb error"))
                 .verify();
     }
 
@@ -106,5 +96,14 @@ class FranchiseAdapterTest {
         StepVerifier.create(franchiseAdapter.findByName("FRANQUICIA_1")).consumeErrorWith(error ->
                         Assertions.assertEquals(error.getMessage(), ValidationErrorMessage.FRANCHISE_DOES_NOT_EXISTS.getMessage()))
                 .verify();
+    }
+
+    @Test
+    public void changeNameSuccess(){
+        Mockito.when(dynamoDBTemplateAdapter.getById(any())).thenReturn(Mono.just(buildFranchise()));
+        Mockito.when(dynamoDBTemplateAdapter.delete(any())).thenReturn(Mono.just(buildFranchise()));
+        Mockito.when(dynamoDBTemplateAdapter.save(any())).thenReturn(Mono.just(buildFranchise()));
+        StepVerifier.create(franchiseAdapter.changeName("FRANQUICIA_1","FRANQUICIA_11")).consumeNextWith(Assertions::assertTrue)
+                .verifyComplete();
     }
 }

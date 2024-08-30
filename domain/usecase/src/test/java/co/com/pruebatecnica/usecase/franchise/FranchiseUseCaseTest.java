@@ -29,4 +29,12 @@ class FranchiseUseCaseTest {
         StepVerifier.create(response)
                 .consumeNextWith(Assertions::assertTrue).verifyComplete();
     }
+
+    @Test
+    public void changeNameSuccess(){
+        Mockito.when(franchiseGateway.changeName(any(),any())).thenReturn(Mono.just(Boolean.TRUE));
+        Mono<Boolean> response = franchiseUseCase.changeName("FRANQUICIA_99","FRANQUICIA_99.1");
+        StepVerifier.create(response)
+                .consumeNextWith(Assertions::assertTrue).verifyComplete();
+    }
 }

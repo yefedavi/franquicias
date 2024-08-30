@@ -38,11 +38,41 @@ public class BranchOfficeUseCase {
                 .onErrorResume(Predicate.not(FranchiseException.class::isInstance), error -> Mono.error(new FranchiseException(ValidationErrorMessage.DYNAMODB_SAVE_ERROR)));
     }
 
+    public Mono<Boolean> changeName(String franchise,String branchOfficeName,String newBranchOfficeName){
+        return franchiseGateway.findByName(franchise)
+                .handle((Franchise franchiseDb,SynchronousSink<Franchise> sink) -> sinkValidationDoesNotExists(franchiseDb, sink,branchOfficeName))
+                .map(modelDb -> {
+                    modelDb.setBranchOfficeList(updateNameList(modelDb.getBranchOfficeList(),branchOfficeName,newBranchOfficeName));
+                    return modelDb;
+                }).flatMap(franchiseGateway::update)
+                .onErrorResume(Predicate.not(FranchiseException.class::isInstance), error -> Mono.error(new FranchiseException(ValidationErrorMessage.DYNAMODB_SAVE_ERROR)));
+    }
+
     private static void sinkValidationExists(Franchise modelDb, SynchronousSink<Franchise> sink,String branchOfficeName) {
         if(modelDb.getBranchOfficeList() != null && modelDb.getBranchOfficeList().stream().anyMatch(branchOffice -> branchOffice.getName().equals(branchOfficeName))){
             sink.error(new FranchiseException(ValidationErrorMessage.BRANCH_OFFICE_EXISTS));
         }else {
             sink.next(modelDb);
         }
+    }
+    private static void sinkValidationDoesNotExists(Franchise modelDb, SynchronousSink<Franchise> sink,String branchOfficeName) {
+        if(modelDb.getBranchOfficeList() != null && modelDb.getBranchOfficeList().stream().noneMatch(branchOffice -> branchOffice.getName().equals(branchOfficeName))){
+            sink.error(new FranchiseException(ValidationErrorMessage.BRANCH_OFFICE_DOES_NOT_EXISTS));
+        }else {
+            sink.next(modelDb);
+        }
+    }
+
+    private List<BranchOffice> updateNameList(List<BranchOffice> branchOfficeListOLd, String branchOfficeName,String newBranchOfficeName){
+        List<BranchOffice> list = null;
+        if(branchOfficeListOLd != null && !branchOfficeListOLd.isEmpty()){
+            list = new ArrayList<>(branchOfficeListOLd);
+            list.forEach(branchOffice -> {
+                if(branchOffice.getName().equals(branchOfficeName)){
+                    branchOffice.setName(newBranchOfficeName);
+                }
+            });
+        }
+        return list;
     }
 }

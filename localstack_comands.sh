@@ -21,13 +21,17 @@ curl -X POST http://localhost:8080/api/branchOffice \
    -H 'Content-Type: application/json' \
    -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE"}'
 
+curl -X PUT http://localhost:8080/api/branchOffice \
+  -H 'Content-Type: application/json' \
+  -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE","newBranchOfficeName":"SUBWAY_MANRIQUE_1.1.1"}'
+
 curl -X POST http://localhost:8080/api/product \
    -H 'Content-Type: application/json' \
    -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE","name":"SUBWAY_ITALIANO","stock":17}'
 
 curl -X POST http://localhost:8080/api/product \
     -H 'Content-Type: application/json' \
-    -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE","name":"SUBWAY_HAWAIANO","stock":35}'
+    -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE","name":"SUBWAY_HAWAIANO","stock":55}'
 
 curl -X DELETE http://localhost:8080/api/product \
     -H 'Content-Type: application/json' \
@@ -39,16 +43,24 @@ curl -X PUT http://localhost:8080/api/product \
 
 curl -X PUT http://localhost:8080/api/product/name \
     -H 'Content-Type: application/json' \
-    -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE","name":"SUBWAY_HAWAIANO","newName":"SUBWAY_HAWAIANO_UPDATE"}'
+    -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE","name":"SUBWAY_HAWAIANO","newName":"SUBWAY_HAWAIANO_2"}'
 
 
 curl -X POST http://localhost:8080/api/franchise \
    -H 'Content-Type: application/json' \
    -d '{"name":"QUESUDOS"}'
 
+curl -X PUT http://localhost:8080/api/franchise \
+   -H 'Content-Type: application/json' \
+   -d '{"name":"QUESUDOS","newName":"QUESUDOS_2.0.0"}'
+
 curl -X POST http://localhost:8080/api/branchOffice \
    -H 'Content-Type: application/json' \
    -d '{"franchiseName":"QUESUDOS","branchOfficeName":"CASTILLA"}'
+
+curl -X PUT http://localhost:8080/api/branchOffice \
+  -H 'Content-Type: application/json' \
+  -d '{"franchiseName":"QUESUDOS","branchOfficeName":"CASTILLA","newBranchOfficeName":"CASTILLA_1.1.1"}'
 
 curl -X POST http://localhost:8080/api/branchOffice \
    -H 'Content-Type: application/json' \
@@ -66,4 +78,9 @@ curl -X POST http://localhost:8080/api/product \
        -H 'Content-Type: application/json' \
        -d '{"franchiseName":"QUESUDOS","branchOfficeName":"CASTILLA","name":"PAN_HAMBURGUESA","stock":300}'
 
-curl -X GET http://localhost:8080/api/product/maxStockBranchOffice/SUBWAY
+curl -X GET http://localhost:8080/api/product/maxStockBranchOffice/QUESUDOS
+
+
+curl -X POST http://localhost:8080/api/franchise \
+   -H 'Content-Type: application/json' \
+   -d '{"name":"VIDEOGAMES"}'

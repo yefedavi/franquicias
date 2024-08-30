@@ -14,4 +14,8 @@ public class FranchiseUseCase {
         return franchiseGateway.save(franchise);
     }
 
+    public Mono<Boolean>changeName(String franchiseName,String newName){
+        return franchiseGateway.changeName(franchiseName,newName);
+    }
+
 }

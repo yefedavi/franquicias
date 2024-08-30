@@ -52,6 +52,14 @@ public class FranchiseAdapter implements FranchiseGateway {
     }
 
     @Override
+    public Mono<Boolean> changeName(String franchiseName, String newName) {
+        return findByName(franchiseName).flatMap(franchiseDb -> dynamoDBTemplateAdapter.delete(franchiseDb).flatMap(franchise -> {
+            franchise.setName(newName);
+            return dynamoDBTemplateAdapter.save(franchise);
+        }).map(Objects::nonNull));
+    }
+
+    @Override
     public Mono<Franchise> findByName(String name) {
         return dynamoDBTemplateAdapter.getById(name)
                 .switchIfEmpty(Mono.error(new FranchiseException(ValidationErrorMessage.FRANCHISE_DOES_NOT_EXISTS)));

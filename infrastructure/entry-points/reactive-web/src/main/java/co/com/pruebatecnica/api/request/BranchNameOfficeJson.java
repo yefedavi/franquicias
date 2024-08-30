@@ -12,7 +12,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @Builder(toBuilder = true)
 @Data
-public class ProductNameJson {
+public class BranchNameOfficeJson {
     @NotNull
     @NotEmpty
     @JsonProperty("franchiseName")
@@ -23,10 +23,6 @@ public class ProductNameJson {
     String branchOfficeName;
     @NotNull
     @NotEmpty
-    @JsonProperty("name")
-    String name;
-    @NotNull
-    @NotEmpty
-    @JsonProperty("newName")
-    String newName;
+    @JsonProperty("newBranchOfficeName")
+    String newBranchOfficeName;
 }
