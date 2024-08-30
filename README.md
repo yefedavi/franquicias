@@ -54,7 +54,7 @@ se requiere tener instalado docker y docker compose para el correcto funcionamie
 ```
 docker build -t franquicias:1.0 .
 ```
-2.correr la imagen de docker
+2.correr la imagen de docker (opcional)
 ```
 docker run -p8080:8080 franquicias:1.0
 ```
@@ -65,7 +65,9 @@ docker run -p8080:8080 franquicias:1.0
 docker rmi franquicias:1.0 --force
 ```
 3.Ejecutar docker-compose.yaml para subir el ambiente de local stack que permite tener el servicio de aws dynamodb en entorno local.
+
 4. ejecutar el siguiente script, que permite crear la tabla en dynamodb
+
 ```
 aws --endpoint-url=http://localhost:4566 dynamodb create-table \
   --table-name franchise \

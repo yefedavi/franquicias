@@ -73,9 +73,9 @@ public class ProductHandler {
     }
 
     public Mono<ServerResponse> getStockMaxByBranchOffice(ServerRequest serverRequest) {
-        String franchisteName = serverRequest.pathVariable("franchiseName");
-        log.info("Max Product Stock By BranchOffice Request ".concat(franchisteName));
-        return productUseCase.getProductsStockMax(franchisteName)
+        String franchiseName = serverRequest.pathVariable("franchiseName");
+        log.info("Max Product Stock By BranchOffice Request ".concat(franchiseName));
+        return productUseCase.getProductsStockMax(franchiseName)
                 .collectList()
                 .flatMap(success -> ServerResponse.status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)

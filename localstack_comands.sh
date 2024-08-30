@@ -74,9 +74,14 @@ curl -X POST http://localhost:8080/api/product \
        -H 'Content-Type: application/json' \
        -d '{"franchiseName":"QUESUDOS","branchOfficeName":"BELEN","name":"PAN_HAMBURGUESA","stock":200}'
 
-curl -X POST http://localhost:8080/api/product \
+curl -X PUT http://localhost:8080/api/product \
        -H 'Content-Type: application/json' \
-       -d '{"franchiseName":"QUESUDOS","branchOfficeName":"CASTILLA","name":"PAN_HAMBURGUESA","stock":300}'
+       -d '{"franchiseName":"QUESUDOS","branchOfficeName":"CASTILLA","name":"PAN_HAMBURGUESA","stock":500}'
+
+
+curl -X PUT http://localhost:8080/api/product/name \
+    -H 'Content-Type: application/json' \
+    -d '{"franchiseName":"QUESUDOS_2.0.0","branchOfficeName":"CASTILLA","name":"PAN_PERRO","newName":"PAN_PERRO_2"}'
 
 curl -X GET http://localhost:8080/api/product/maxStockBranchOffice/QUESUDOS
 
