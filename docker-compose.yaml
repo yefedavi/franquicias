@@ -13,3 +13,19 @@ services:
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+
+  franquicias:
+    image: franquicias:1.0
+    container_name: franquicias
+    build:
+      context: . # Ruta al Dockerfile de tu aplicación Spring Boot
+    ports:
+      - "8080:8080"  # Puerto donde corre tu aplicación Spring Boot
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_REGION=us-east-1
+      - DYNAMODB_ENDPOINT=http://localstack:4566
+      - S3_ENDPOINT=http://localstack:4566
+    depends_on:
+      - localstack

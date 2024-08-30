@@ -2,6 +2,7 @@ package co.com.pruebatecnica.api;
 
 import co.com.pruebatecnica.api.request.ProductJson;
 import co.com.pruebatecnica.api.request.ProductNameJson;
+import co.com.pruebatecnica.api.request.ProductRemoveJson;
 import co.com.pruebatecnica.api.response.ProductResponseJson;
 import co.com.pruebatecnica.api.response.ProductRootResponseJson;
 import co.com.pruebatecnica.api.util.RequestValidator;
@@ -44,7 +45,7 @@ public class ProductHandler {
     }
 
     public Mono<ServerResponse> removeBranchOffice(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(ProductJson.class)
+        return serverRequest.bodyToMono(ProductRemoveJson.class)
                 .flatMap(this.validator::validate)
                 .doOnSuccess(request -> log.info("Remove Product Request ".concat(request.toString())))
                 .flatMap(productJson -> productUseCase.removeFromBranchOffice(productJson.getFranchiseName(),productJson.getBranchOfficeName(),productJson.getName()))

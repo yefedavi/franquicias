@@ -13,8 +13,8 @@ spring:
       enabled: false
 aws:
   dynamodb:
-    endpoint: "http://localhost:4566"
-  region: "us-east-1"
+    endpoint: "${DYNAMODB_ENDPOINT:localhost:4566}"
+  region: "${AWS_REGION:us-east-1}"
 
 springdoc:
   api-docs:

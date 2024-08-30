@@ -96,8 +96,8 @@ class HandlerTest {
         return ProductNameJson.builder().franchiseName("SUBWAY").branchOfficeName("SUCURAL_2").name("SUBWAY_italiano").newName("SUBWAY_ITALIANISIMO").build();
     }
 
-    private ProductJson buildRequestDeleteProduct(){
-        return ProductJson.builder().franchiseName("SUBWAY").branchOfficeName("SUCURAL_1").name("SUBWAY_HAWAIANO").build();
+    private ProductRemoveJson buildRequestDeleteProduct(){
+        return ProductRemoveJson.builder().franchiseName("SUBWAY").branchOfficeName("SUCURAL_1").name("SUBWAY_HAWAIANO").build();
     }
 
 
@@ -194,11 +194,11 @@ class HandlerTest {
         when(productUseCase.removeFromBranchOffice(any(),any(),any()))
                 .thenReturn(Mono.just(Boolean.TRUE));
         when(requestValidator.validate(any()))
-                .thenReturn(Mono.just(ProductJson.builder().franchiseName("SUBWAY").branchOfficeName("SUCURAL_1").name("SUBWAY_HAWAIANO").build()));
+                .thenReturn(Mono.just(ProductRemoveJson.builder().franchiseName("SUBWAY").branchOfficeName("SUCURAL_1").name("SUBWAY_HAWAIANO").build()));
         webTestClient.method(HttpMethod.DELETE)
                 .uri("/api/product")
                 .header("Content-Type", "application/json")
-                .body(Mono.just(buildRequestDeleteProduct()), ProductJson.class)
+                .body(Mono.just(buildRequestDeleteProduct()), ProductRemoveJson.class)
                 .exchange()
                 .expectStatus()
                 .isOk();

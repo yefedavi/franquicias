@@ -23,7 +23,7 @@ curl -X POST http://localhost:8080/api/branchOffice \
 
 curl -X PUT http://localhost:8080/api/branchOffice \
   -H 'Content-Type: application/json' \
-  -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE","newBranchOfficeName":"SUBWAY_MANRIQUE_1.1.1"}'
+  -d '{"franchiseName":"SUBWAY","branchOfficeName":"SUBWAY_MANRIQUE","newBranchOfficeName":"SUBWAY_MANRIQUE"}'
 
 curl -X POST http://localhost:8080/api/product \
    -H 'Content-Type: application/json' \

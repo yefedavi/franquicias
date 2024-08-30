@@ -45,3 +45,33 @@ Los entry points representan los puntos de entrada de la aplicación o el inicio
 Este módulo es el más externo de la arquitectura, es el encargado de ensamblar los distintos módulos, resolver las dependencias y crear los beans de los casos de use (UseCases) de forma automática, inyectando en éstos instancias concretas de las dependencias declaradas. Además inicia la aplicación (es el único módulo del proyecto donde encontraremos la función “public static void main(String[] args)”.
 
 **Los beans de los casos de uso se disponibilizan automaticamente gracias a un '@ComponentScan' ubicado en esta capa.**
+
+## Despliegue Local
+
+se requiere tener instalado docker y docker compose para el correcto funcionamiento del entorno local.
+
+1.ejecutar el siguiente script
+```
+docker build -t franquicias:1.0 .
+```
+2.correr la imagen de docker
+```
+docker run -p8080:8080 franquicias:1.0
+```
+
+*eliminar imagen
+
+```
+docker rmi franquicias:1.0 --force
+```
+3.Ejecutar docker-compose.yaml para subir el ambiente de local stack que permite tener el servicio de aws dynamodb en entorno local.
+4. ejecutar el siguiente script, que permite crear la tabla en dynamodb
+```
+aws --endpoint-url=http://localhost:4566 dynamodb create-table \
+  --table-name franchise \
+  --attribute-definitions \
+      AttributeName=name,AttributeType=S \
+  --key-schema \
+      AttributeName=name,KeyType=HASH \
+  --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
+```
